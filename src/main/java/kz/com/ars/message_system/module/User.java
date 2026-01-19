@@ -6,24 +6,22 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.relational.core.mapping.Column;
 import org.springframework.data.relational.core.mapping.Table;
 
-import java.util.Date;
 
 @Table("users")
-@Data
+@Getter @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-@Builder
 public class User {
     @Id
-    private Long id;
+    Long id;
     @Column("username")
-    private String username;
+    String username;
     @Column("email")
-    private String email;
+    String email;
     @Column("password")
-    private String password;
+    String password;
+    @Column("enabled")
+    Boolean enabled;
     @Column("role")
-    private UserRole role;
-    @Column("created_at")
-    private Date createdAt;
+    UserRole role;
 }

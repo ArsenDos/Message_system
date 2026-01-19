@@ -14,8 +14,7 @@ create table users (
                        username VARCHAR(64) NOT NULL UNIQUE,
                        email VARCHAR(128) NOT NULL unique,
                        password VARCHAR(2048) NOT NULL ,
-                       enabled BOOLEAN DEFAULT FALSE,
-                       created_at TIMESTAMP
+                       enabled BOOLEAN DEFAULT FALSE
 );
 -- =======================================================
 -- Table: chat
