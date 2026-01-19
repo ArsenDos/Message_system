@@ -1,4 +1,4 @@
-package kz.com.nurzandars.message_system;
+package kz.com.ars.message_system;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
