@@ -8,275 +8,298 @@
 
 ---
 
-## 🧭 **1. Описание проекта**
+1️⃣ Архитектура и слои
 
-Создать backend-систему мессенджера с поддержкой:
+Controller: reactive (Mono<DTO> / Flux<DTO>), принимают запросы и вызывают сервис.
 
-* SQL базы (через JPA + Hibernate)
-* NoSQL MongoDB
-* Spring Security 6 + JWT авторизация
-* Работа c чатом, пользователями, сообщениями
-* Хранение метаданных в SQL и содержимого сообщений в Mongo
-* Чёткое разделение слоёв: Controller → Service → Repository → Entity/Document
+Service: вся бизнес-логика, реактивные транзакции.
 
-Система должна быть расширяемой, модульной и безопасной.
+Repository: R2DBC репозитории для SQL, ReactiveMongoRepository для Mongo.
 
----
+DTO/Mapper: отделяй сущности от API, особенно для сообщений и чатов.
 
-# 🏗️ **2. Технологический стек**
+Entity/Document: SQL через R2DBC, Mongo через reactive документы.
 
-**Backend:**
+2️⃣ SQL + Mongo
 
-* Java 17+
-* Spring Boot 3.x
-* Spring Data JPA (Hibernate)
-* Spring Data MongoDB
-* Spring Security 6 + JWT
-* Lombok
-* MapStruct (по желанию)
-* Maven
+SQL (R2DBC) — метаданные: User, Chat, ChatMember, Message (без текста).
 
-**Базы данных:**
+Mongo (Reactive) — текст и история: MessageContent, ChatHistory.
 
-* PostgreSQL / MySQL (выберите сами)
-* MongoDB
+3️⃣ Reactive паттерны
 
----
+Mono — один объект (например, пользователь, одно сообщение).
 
-# 🧱 **3. Архитектура и слои**
+Flux — поток объектов (например, история чата, список участников).
 
-1. **Presentation Layer**
+Используй .flatMap(), .map(), .zipWith() для комбинаций SQL + Mongo.
 
-   * REST Controllers
-   * DTO → Validation
-   * JWT Auth Filters
+4️⃣ SOLID
 
-2. **Service Layer**
+Single Responsibility: один сервис = одна логика.
 
-   * Бизнес-логика
-   * Транзакции
-   * Работа сразу с SQL + Mongo
+Open/Closed: новые фичи добавляются без изменения старых сервисов.
 
-3. **Repository Layer**
+Dependency Inversion: внедрение репозиториев через конструктор, чтобы было легко тестировать.
 
-   * JPA Repositories
-   * Mongo Repositories
+5️⃣ JWT + Security
 
-4. **Data Layer**
+Защищай эндпоинты через @PreAuthorize или reactive SecurityWebFilterChain.
 
-   * SQL Entities (Hibernate)
-   * Mongo Documents
+Пароли — BCrypt, токены — JWT.
 
----
+Если хочешь, я могу составить готовую структуру проекта на реактивном Spring, с примером папок, сущностей, DTO и базовых сервисов, чтобы тебе было проще стартовать и всё делать одному.
 
-# 🗄️ **4. Модель данных**
+Хочешь, чтобы я это сделал?
 
-## 4.1 **SQL Entities (через Hibernate)**
+нет да я понял перепиши полностью тз только под меня без друга я один
 
-### **User**
+Отлично! Вот полностью переработанное ТЗ под одного разработчика, с акцентом на reactive стек (R2DBC + ReactiveMongo) и соблюдение SOLID и паттернов. Я убрал всё про «друга» и сделал всё персонально под тебя:
 
-| Поле      | Тип               | Примечание |
-| --------- | ----------------- | ---------- |
-| id        | Long              | PK         |
-| username  | String            | уникальный |
-| email     | String            | уникальный |
-| password  | String            | Bcrypt     |
-| role      | Enum(USER, ADMIN) |            |
-| createdAt | Timestamp         |            |
+Message_system
+📄 ТЕХНИЧЕСКОЕ ЗАДАНИЕ (ТЗ)
+Проект: Messenger 2.0 — Secure Reactive Multi-Database Messaging Platform
+🧭 1. Описание проекта
 
----
+Создать reactive backend-систему мессенджера с поддержкой:
 
-### **Chat**
+SQL база через R2DBC (reactive SQL)
 
-| Поле      | Тип                   |
-| --------- | --------------------- |
-| id        | Long                  |
-| name      | String                |
-| type      | Enum (PERSONAL/GROUP) |
-| createdBy | FK(User)              |
+NoSQL MongoDB через ReactiveMongo
 
----
+Spring Security 6 + JWT авторизация
 
-### **ChatMember**
+Работа c чатом, пользователями, сообщениями
 
-| Поле     | Тип       |
-| -------- | --------- |
-| id       | Long      |
-| user     | FK(User)  |
-| chat     | FK(Chat)  |
-| joinedAt | Timestamp |
+Хранение метаданных в SQL и содержимого сообщений в Mongo
 
----
+Чёткое разделение слоёв: Controller → Service → Repository → Entity/Document
 
-### **Message (SQL)**
+Соблюдение принципов SOLID и архитектурных паттернов
 
-| Поле      | Тип       |
-| --------- | --------- |
-| id        | Long      |
-| chatId    | FK(Chat)  |
-| senderId  | FK(User)  |
-| mongoId   | String    |
-| createdAt | Timestamp |
+Система должна быть расширяемой, модульной и безопасной
 
-Это метаданные. Реальный текст хранится в Mongo.
+🏗️ 2. Технологический стек
 
----
+Backend:
 
-# 🔐 **5. Spring Security + JWT**
+Java 17+
+
+Spring Boot 3.x
+
+Spring Data R2DBC (reactive SQL)
+
+Spring Data Reactive MongoDB
+
+Spring Security 6 + JWT
+
+Project Reactor (Flux / Mono)
+
+Lombok
+
+MapStruct (по желанию)
+
+Maven
+
+Базы данных:
+
+PostgreSQL / MySQL (reactive через R2DBC)
+
+MongoDB (reactive)
+
+🧱 3. Архитектура и слои
+
+Presentation Layer (Controller)
+
+REST Controllers (reactive: Mono<> / Flux<>)
+
+DTO → Validation
+
+JWT Auth Filters
+
+Service Layer
+
+Бизнес-логика (reactive)
+
+Транзакции (reactive)
+
+Работа сразу с SQL + Mongo
+
+Соблюдение SOLID: Single Responsibility, Open/Closed, Dependency Inversion и др.
+
+Repository Layer
+
+R2DBC Repositories
+
+Reactive Mongo Repositories
+
+Data Layer
+
+SQL Entities (R2DBC)
+
+Mongo Documents (Reactive)
+
+🗄️ 4. Модель данных
+4.1 SQL Entities (R2DBC)
+User
+Поле	Тип	Примечание
+id	Long	PK
+username	String	уникальный
+email	String	уникальный
+password	String	Bcrypt
+role	Enum(USER, ADMIN)	
+createdAt	Timestamp	
+Chat
+Поле	Тип
+id	Long
+name	String
+type	Enum (PERSONAL/GROUP)
+createdBy	FK(User)
+ChatMember
+Поле	Тип
+id	Long
+user	FK(User)
+chat	FK(Chat)
+joinedAt	Timestamp
+Message (SQL)
+Поле	Тип
+id	Long
+chatId	FK(Chat)
+senderId	FK(User)
+mongoId	String
+createdAt	Timestamp
+
+Это метаданные. Реальный текст хранится в MongoDB.
+
+4.2 Mongo Documents (ReactiveMongo)
+MessageContent
+Поле	Тип	Примечание
+id	String	PK
+text	String	текст
+attachments	List<String>	файлы/ссылки
+ChatHistory
+Поле	Тип	Примечание
+id	String	PK
+chatId	Long	FK(Chat)
+messages	List<MessageContent>	поток сообщений
+🔐 5. Spring Security + JWT
 
 Система должна поддерживать:
 
-### Registration
+Registration
 
-* POST `/auth/register`
+POST /auth/register
 
-  * username, email, password
+username, email, password
 
-### Login
+Login
 
-* POST `/auth/login`
+POST /auth/login
 
-  * возвращает Access Token и Refresh Token
+возвращает Access Token и Refresh Token
 
-### Refresh
+Refresh
 
-* POST `/auth/refresh`
+POST /auth/refresh
 
-### Доступ
+Доступ
 
-* `/auth/**` — публично
-* `/users/**`, `/chats/**`, `/messages/**` — только с JWT
+/auth/** — публично
 
-Пароль хранится в BCrypt.
+/users/**, /chats/**, /messages/** — только с JWT
 
----
+Пароль хранится в BCrypt, токены — JWT.
+Контроллеры — reactive (Mono<> / Flux<>).
 
-# 📡 **6. REST API**
-
-## 6.1 **AUTH API**
-
-```
+📡 6. REST API
+6.1 AUTH API
 POST /auth/register
 POST /auth/login
 POST /auth/refresh
-```
 
----
-
-## 6.2 **USER API**
-
-```
+6.2 USER API
 GET /users
 GET /users/{id}
 POST /users
 PUT /users/{id}
 DELETE /users/{id}
 GET /users/{id}/chats
-```
 
----
-
-## 6.3 **CHAT API**
-
-```
+6.3 CHAT API
 POST /chats           — создать чат
 POST /chats/{id}/add  — добавить участника
 DELETE /chats/{id}/remove/{userId}
 GET /chats/{id}
 GET /chats/{id}/members
-```
 
----
-
-## 6.4 **MESSAGE API**
-
-```
+6.4 MESSAGE API
 POST /messages/send           — отправить сообщение
 GET /messages/chat/{chatId}   — получить историю чата
 DELETE /messages/{id}
-```
 
----
+🔗 7. Логика отправки сообщения
 
-# 🔗 **7. Логика отправки сообщения**
+Принять reactive запрос: chatId, senderId, текст, attachments
 
-1. Принять запрос: chatId, senderId, текст, attachments
-2. Сохранить содержимое сообщения **в Mongo MessageContent**
-3. Получить `mongoId`
-4. Создать SQL сущность `Message`
-5. Добавить запись в Mongo ChatHistory
-6. Вернуть DTO пользователю
+Сохранить содержимое сообщения в Reactive Mongo MessageContent
 
----
+Получить mongoId
 
-# 👥 **8. Разделение задач (ты и друг)**
+Создать R2DBC SQL сущность Message с ссылкой на mongoId
 
-## 🧑‍💻 **ТЫ:**
+Обновить ChatHistory в Mongo
 
-* Spring Security + JWT (полностью)
-* User Entity + AuthController
-* MessageContent (Mongo)
-* Message (SQL)
-* MessageService (сохранение → SQL + Mongo)
+Вернуть reactive DTO пользователю
 
-## 👨‍💻 **ДРУГ:**
+📅 8. Этапы разработки (Sprint)
+Sprint 1 — Архитектура и проект
 
-* Chat Entity
-* ChatMember Entity
-* ChatController
-* ChatHistory (Mongo)
-* ChatService
+настройка зависимостей
 
-## 🤝 **ОБА:**
+подключение SQL через R2DBC
 
-* Интеграция сообщений
-* Финальные тесты в Postman
-* Рефакторинг
+подключение Mongo через ReactiveMongo
 
----
+базовые папки (controller, service, repository)
 
-# 📅 Этапы разработки (Sprint)
+Sprint 2 — Security & Users
 
-## **Sprint 1 — Архитектура и проект**
+регистрация
 
-* настройка зависимостей
-* подключение SQL
-* подключение Mongo
-* базовые папки (controller, service, repository)
+логин
 
-## **Sprint 2 — Security & Users**
+refresh
 
-* регистрация
-* логин
-* refresh
-* защита эндпоинтов
+защита эндпоинтов
 
-## **Sprint 3 — Chats**
+Sprint 3 — Chats
 
-* создание чата
-* добавление/удаление участников
+создание чата
 
-## **Sprint 4 — Messages (SQL + Mongo)**
+добавление/удаление участников
 
-* отправка
-* сохранение
-* вывод истории
+Sprint 4 — Messages (SQL + Mongo)
 
-## **Sprint 5 — Тесты и документация**
+отправка сообщений
 
-* Postman Collection
-* исправление ошибок
+сохранение в SQL + Mongo
 
----
+вывод истории чата
 
-# 🏁 **9. Результат**
+Sprint 5 — Тесты и документация
 
-На выходе у вас будет:
+Postman Collection
 
-✔ Полноценный Spring-backend
-✔ SQL + NoSQL одновременно
+исправление ошибок
+
+финальный рефакторинг
+
+🏁 9. Результат
+
+На выходе у тебя будет:
+
+✔ Полноценный reactive Spring backend
+✔ SQL + NoSQL одновременно (R2DBC + Reactive Mongo)
 ✔ JWT авторизация
-✔ Продвинутая архитектура
-✔ Рабочие чаты и сообщения
-
----
+✔ Продвинутая архитектура с соблюдением SOLID и паттернов
+✔ Полностью рабочие чаты и сообщения
