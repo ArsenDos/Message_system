@@ -5,11 +5,15 @@ spring:
   dotenv:
     enabled: true
     application-name: message-service-dev
-
     postgres:
-        url: jdbc:postgresql://${POSTGRES_HOST}:${POSTGRES_PORT}/${POSTGRES_DB}
+        url: r2dbc:postgresql://${POSTGRES_HOST}:${POSTGRES_PORT}/${POSTGRES_DB}
         username: POSTGRES_USER
         password: POSTGRES_PASSWORD
-
     mongodb:
         uri: mongodb://${MONGO_USER}:${MONGO_PASS}@${MONGO_HOST}:${MONGO_PORT}/${MONGO_DB}?authSource=admin
+
+security:
+  jwt:
+    secret-key:${JWT_SECRET_KEY}
+    access-token-expiration:90000
+    refresh-token-expiration:100000
