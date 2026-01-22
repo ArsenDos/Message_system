@@ -5,6 +5,7 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.stereotype.Component;
 
 import java.util.function.Function;
 import javax.crypto.SecretKey;
@@ -13,6 +14,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
+@Component
 public class JwtUtil implements Serializable {
     @Value("${dev.security.jwt.secret-key}")
     private String secret;
@@ -46,7 +48,7 @@ public class JwtUtil implements Serializable {
         return doGenerateToken(claims, userDetails.getUsername(), jwtRefreshValidity);
     }
 
-    public Boolean validateToken(String token) {
+    public Boolean validateToken(String token , UserDetails userDetails) {
         final String username = getUsernameFromToken(token);
         return (username != null && !isTokenExpired(token));
     }

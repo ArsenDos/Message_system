@@ -1,6 +1,7 @@
 package kz.com.ars.message_system.controller;
 
 import kz.com.ars.message_system.DTO.AddMemberRequest;
+import kz.com.ars.message_system.DTO.ChatRequestDto;
 import kz.com.ars.message_system.module.Chat;
 import kz.com.ars.message_system.module.ChatMember;
 import kz.com.ars.message_system.service.impl.ChatServiceImpl;
@@ -19,7 +20,7 @@ public class ChatController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public Mono<Chat> createChatMember(@RequestBody CreateChatRequest request) {
+    public Mono<Chat> createChatMember(@RequestBody ChatRequestDto request) {
         //add when i adding JWT
         Long creatorId = 1L;
         return chatService.createChat(request.getName(),creatorId);
