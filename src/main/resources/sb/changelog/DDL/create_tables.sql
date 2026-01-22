@@ -9,15 +9,23 @@ DROP TABLE IF EXISTS users;
 -- =======================================================
 -- Table: users
 -- =======================================================
+CREATE TABLE roles(
+                      id BIGSERIAL PRIMARY KEY,
+                      name VARCHAR(100) UNIQUE NOT NULL
+);
+-- =======================================================
+-- Table: chat
+-- =======================================================
 create table users (
                        id BIGINT PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
                        username VARCHAR(64) NOT NULL UNIQUE,
                        email VARCHAR(128) NOT NULL unique,
                        password VARCHAR(2048) NOT NULL ,
-                       enabled BOOLEAN DEFAULT FALSE
+                       enabled BOOLEAN DEFAULT FALSE,
+                       role_id BIGINT REFERENCES roles(id) ON DELETE SET NULL
 );
 -- =======================================================
--- Table: chat
+-- Table: member_chat
 -- =======================================================
 create table chat (
                       id BIGINT PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
@@ -25,7 +33,7 @@ create table chat (
                       created_by BIGINT REFERENCES users(id) ON DELETE SET NULL
 );
 -- =======================================================
--- Table: member_chat
+-- Table: jwt_tokens
 -- =======================================================
 create table chat_member (
                              id BIGINT PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
@@ -34,7 +42,7 @@ create table chat_member (
                              joined_at TIMESTAMP
 );
 -- =======================================================
--- Table: jwt_tokens
+-- Table: authorities
 -- =======================================================
 create TABLE jwt_token (
                            id BIGINT PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
@@ -42,13 +50,6 @@ create TABLE jwt_token (
                            token_value VARCHAR(512) NOT NULL,
                            expired_date TIMESTAMP NOT NULL,
                            created_at TIMESTAMP
-);
--- =======================================================
--- Table: authorities
--- =======================================================
-CREATE TABLE roles(
-                      id BIGSERIAL PRIMARY KEY,
-                      name VARCHAR(100) UNIQUE NOT NULL
 );
 
 -- =======================================================
@@ -66,12 +67,4 @@ CREATE TABLE roles_authorities (
                                    authority_id BIGINT NOT NULL REFERENCES authorities(id) ON DELETE CASCADE,
                                    PRIMARY KEY (role_id, authority_id)
 );
--- =======================================================
--- Table: user_roles
--- =======================================================
-CREATE TABLE user_roles
-(
-    user_id BIGINT NOT NULL REFERENCES users (id) ON DELETE CASCADE,
-    role_id BIGINT NOT NULL REFERENCES roles (id) ON DELETE CASCADE,
-    PRIMARY KEY (user_id, role_id)
-);
+

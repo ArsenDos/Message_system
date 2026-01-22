@@ -1,7 +1,6 @@
 package kz.com.ars.message_system.repository;
 
 import kz.com.ars.message_system.module.Role;
-import kz.com.ars.message_system.module.UserRole;
 import org.springframework.data.r2dbc.repository.R2dbcRepository;
 import reactor.core.publisher.Mono;
 

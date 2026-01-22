@@ -22,6 +22,6 @@ public class User {
     String password;
     @Column("enabled")
     Boolean enabled;
-    @Column("role")
-    UserRole role;
+    @Column("role_id")
+    Long role;
 }

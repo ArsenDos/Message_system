@@ -36,6 +36,7 @@ public class ReactiveUserDetailsServiceImpl implements ReactiveUserDetailsServic
 
     private Mono<UserDetails> buildUserDetails(User user) {
         Mono<Role> roleMono = roleRepository.findById(user.getRole());
+
         Mono<List<GrantedAuthority>> authoritiesMono = getAuthorities(user.getRole());
 
         return Mono.zip(roleMono, authoritiesMono)
@@ -55,10 +56,6 @@ public class ReactiveUserDetailsServiceImpl implements ReactiveUserDetailsServic
                 });
     }
 
-    /**
-     * Асинхронно находит все ПРАВА (authorities) для ID роли
-     * (Это и есть M:N (многие-ко-многим) логика)
-     */
     private Mono<List<GrantedAuthority>> getAuthorities(Long roleId) {
         return rolesAuthoritiesRepository.getAllByRoleId(roleId)
                 .flatMap(roleAuthority -> authorityRepository.findById(roleAuthority.getAuthorityId()))
