@@ -8,17 +8,19 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.relational.core.mapping.Column;
 import org.springframework.data.relational.core.mapping.Table;
 
+import java.time.Instant;
+
 @Table("refresh_tokens")
 @Getter @Setter
 @AllArgsConstructor
 @NoArgsConstructor
 public class RefreshToken {
     @Id
-    private Long id;
-    @Column("user_id")
-    private Long userId;
-    @Column("token_value")
-    private String tokenValue;
-    @Column("expiry_date")
-    private String expiryDate;
+     Long id;
+    @Column(value = "user_id")
+     Long userId;
+    @Column(value = "token_value")
+     String tokenValue;
+    @Column(value = "expiry_date")
+    Instant expiryDate;
 }

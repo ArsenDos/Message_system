@@ -68,16 +68,13 @@ public class JwtUtil implements Serializable {
 
 
 
-    public Boolean isTokenExpired(String token) {
+    private Boolean isTokenExpired(String token) {
         final Date expiration = getExpirationDateFromToken(token);
         return expiration.before(new Date());
     }
 
 
     private String doGenerateToken(Map<String, Object> claims, String subject, long validity) {
-        Date now = new Date();
-        Date expiryDate = new Date(now.getTime() + validity);
-
         return io.jsonwebtoken.Jwts.builder()
                 .setClaims(claims)
                 .setSubject(subject)
